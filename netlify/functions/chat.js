@@ -61,14 +61,61 @@ function tokenize(text) {
 
 
 // ============================================================
+// FOLLOW-UP / DETAIL DETECTION
+// ============================================================
+
+const DETAIL_PHRASES = [
+
+    "give me detailed answer",
+    "give detailed answer",
+    "give me a detailed answer",
+    "detailed answer",
+    "detail",
+    "tell me more",
+    "more details",
+    "more detail",
+    "more",
+    "explain more",
+    "explain in detail",
+    "detailed explanation",
+    "detailed information",
+    "more information",
+    "elaborate",
+    "elaborate more",
+    "explain it",
+    "explain this",
+    "tell me about it",
+    "tell me more about it"
+
+];
+
+
+function isDetailFollowUp(question) {
+
+    const q =
+        normalizeText(question);
+
+    return DETAIL_PHRASES.some(
+        phrase =>
+            q.includes(
+                normalizeText(phrase)
+            )
+    );
+
+}
+
+
+// ============================================================
 // INTENT DETECTION
 // ============================================================
 
 function detectIntents(question) {
 
-    const q = normalizeText(question);
+    const q =
+        normalizeText(question);
 
     const intents = {
+
         course: false,
         fee: false,
         application: false,
@@ -79,132 +126,170 @@ function detectIntents(question) {
         duration: false,
         eligibility: false,
         certificate: false,
-        online: false
+        online: false,
+        website: false
+
     };
 
 
-    // -------------------------
+    // ========================================================
     // COURSE
-    // -------------------------
+    // ========================================================
 
     if (
         /\bcourse\b|\bcourses\b|\btraining\b|\bprogram\b|\bprograms\b/.test(q)
     ) {
+
         intents.course = true;
+
     }
 
 
-    // -------------------------
+    // ========================================================
     // FEES
-    // -------------------------
+    // ========================================================
 
     if (
         /\bfee\b|\bfees\b|\bprice\b|\bcost\b|\btuition\b|\bcharges\b|\bhow much\b|\bpayment\b/.test(q)
     ) {
+
         intents.fee = true;
+
     }
 
 
-    // -------------------------
+    // ========================================================
     // APPLICATION
-    // -------------------------
+    // ========================================================
 
     if (
         /\bapply\b|\bapplication\b|\bregister\b|\bregistration\b|\benroll\b|\benrollment\b|\bjoin\b|\bjoining\b/.test(q)
     ) {
+
         intents.application = true;
+
     }
 
 
-    // -------------------------
+    // ========================================================
     // ADMISSION
-    // -------------------------
+    // ========================================================
 
     if (
         /\badmission\b|\badmissions\b|\badmit\b|\bget admission\b/.test(q)
     ) {
+
         intents.admission = true;
+
     }
 
 
-    // -------------------------
+    // ========================================================
     // SCHEDULE
-    // -------------------------
+    // ========================================================
 
     if (
         /\bschedule\b|\btiming\b|\btimings\b|\btime\b|\bbatch\b|\bbatches\b|\bstarting\b|\bstart\b|\bdate\b|\bdays\b|\bmorning\b|\bevening\b|\bweekend\b/.test(q)
     ) {
+
         intents.schedule = true;
+
     }
 
 
-    // -------------------------
+    // ========================================================
     // CAMPUS
-    // -------------------------
+    // ========================================================
 
     if (
         /\bcampus\b|\blocation\b|\bwhere\b|\bislamabad\b|\brawalpindi\b|\bpeshawar\b|\blahore\b|\bmuzaffarabad\b/.test(q)
     ) {
+
         intents.campus = true;
+
     }
 
 
-    // -------------------------
+    // ========================================================
     // CONTACT
-    // -------------------------
+    // ========================================================
 
     if (
         /\bcontact\b|\bphone\b|\bnumber\b|\bwhatsapp\b|\bemail\b|\baddress\b|\bcall\b/.test(q)
     ) {
+
         intents.contact = true;
+
     }
 
 
-    // -------------------------
+    // ========================================================
     // DURATION
-    // -------------------------
+    // ========================================================
 
     if (
         /\bduration\b|\bhow long\b|\bmonths\b|\bweeks\b|\bhours\b|\blast\b/.test(q)
     ) {
+
         intents.duration = true;
+
     }
 
 
-    // -------------------------
+    // ========================================================
     // ELIGIBILITY
-    // -------------------------
+    // ========================================================
 
     if (
         /\beligibility\b|\beligible\b|\bqualification\b|\bqualifications\b|\bprerequisite\b|\bprerequisites\b|\brequirement\b|\brequirements\b|\bbackground\b/.test(q)
     ) {
+
         intents.eligibility = true;
+
     }
 
 
-    // -------------------------
+    // ========================================================
     // CERTIFICATE
-    // -------------------------
+    // ========================================================
 
     if (
         /\bcertificate\b|\bcertification\b|\bcertified\b/.test(q)
     ) {
+
         intents.certificate = true;
+
     }
 
 
-    // -------------------------
+    // ========================================================
     // ONLINE
-    // -------------------------
+    // ========================================================
 
     if (
         /\bonline\b|\bremote\b|\bvirtual\b|\bon campus\b|\bon-campus\b/.test(q)
     ) {
+
         intents.online = true;
+
+    }
+
+
+    // ========================================================
+    // WEBSITE
+    // ========================================================
+
+    if (
+        /\bwebsite\b|\bweb site\b|\bofficial site\b|\bwebpage\b|\bsite\b/.test(q)
+    ) {
+
+        intents.website = true;
+
     }
 
 
     return intents;
+
 }
 
 
@@ -294,7 +379,17 @@ const IMPORTANT_TERMS = {
         "certificate",
         "certification",
         "certified"
+    ],
+
+    website: [
+        "website",
+        "web site",
+        "official site",
+        "webpage",
+        "site",
+        "corvit.com.pk"
     ]
+
 };
 
 
@@ -304,96 +399,141 @@ const IMPORTANT_TERMS = {
 
 function extractCourseNames(question) {
 
-    const q = normalizeText(question);
+    const q =
+        normalizeText(question);
 
     const possibleCourses = [];
 
-    for (const document of knowledgeBase) {
+
+    const coursePatterns = [
+
+        "ai machine learning",
+        "machine learning",
+        "python",
+        "ai robotics",
+        "ai deep learning",
+        "deep learning",
+        "react native",
+        "ccna",
+        "ccnp",
+        "ccie",
+        "certified ethical hacker",
+        "ceh",
+        "aws saa-c03",
+        "azure administrator associate",
+        "full stack web development",
+        "basic to advanced it",
+        "soc analyst",
+        "ibm qradar",
+        "generative ai",
+        "agentic ai",
+        "ai for cyber security",
+        "data visualization with business intelligence",
+        "primavera p6",
+        "ms project",
+        "pmp"
+
+    ];
+
+
+    for (
+        const document
+        of knowledgeBase
+    ) {
 
         const source =
-            String(document.source || "").toLowerCase();
+            normalizeText(
+                document.source || ""
+            );
 
         const text =
-            normalizeText(document.text || "");
+            normalizeText(
+                document.text || ""
+            );
 
-        // ----------------------------------------------------
-        // Extract course-like names from filenames
-        // ----------------------------------------------------
+
+        // ====================================================
+        // COURSE NAMES FROM FILENAMES
+        // ====================================================
 
         const sourceMatch =
             source.match(
                 /course[_\\/-]([^_\\.]+)/g
             );
 
+
         if (sourceMatch) {
 
-            for (const item of sourceMatch) {
+            for (
+                const item
+                of sourceMatch
+            ) {
 
                 const cleaned =
                     item
-                        .replace(/^course[_\\/-]/, "")
-                        .replace(/[-_]/g, " ")
+                        .replace(
+                            /^course[_\\/-]/,
+                            ""
+                        )
+                        .replace(
+                            /[-_]/g,
+                            " "
+                        )
                         .trim();
+
 
                 if (
                     cleaned.length > 2 &&
                     q.includes(cleaned)
                 ) {
-                    possibleCourses.push(cleaned);
+
+                    possibleCourses.push(
+                        cleaned
+                    );
+
                 }
+
             }
+
         }
 
 
-        // ----------------------------------------------------
-        // Check known course phrases inside text
-        // ----------------------------------------------------
+        // ====================================================
+        // KNOWN COURSE NAMES
+        // ====================================================
 
-        const coursePatterns = [
-            "ai machine learning",
-            "machine learning",
-            "python",
-            "ai robotics",
-            "ai deep learning",
-            "deep learning",
-            "react native",
-            "ccna",
-            "ccnp",
-            "ccie",
-            "certified ethical hacker",
-            "ceh",
-            "aws saa-c03",
-            "azure administrator associate",
-            "full stack web development",
-            "basic to advanced it",
-            "soc analyst",
-            "ibm qradar",
-            "generative ai",
-            "agentic ai",
-            "ai for cyber security",
-            "data visualization with business intelligence",
-            "primavera p6",
-            "ms project",
-            "pmp"
-        ];
-
-        for (const course of coursePatterns) {
+        for (
+            const course
+            of coursePatterns
+        ) {
 
             if (
                 q.includes(course) &&
                 text.includes(course)
             ) {
-                possibleCourses.push(course);
+
+                possibleCourses.push(
+                    course
+                );
+
             }
+
         }
+
     }
 
-    return [...new Set(possibleCourses)];
+
+    return [
+        ...new Set(
+            possibleCourses
+        )
+    ];
+
 }
 
 
 // ============================================================
-// SCORE A DOCUMENT
+// SCORE DOCUMENT
 // ============================================================
 
 function scoreDocument(
@@ -404,13 +544,19 @@ function scoreDocument(
 ) {
 
     const text =
-        normalizeText(document.text || "");
+        normalizeText(
+            document.text || ""
+        );
 
     const source =
-        normalizeText(document.source || "");
+        normalizeText(
+            document.source || ""
+        );
 
     const questionText =
-        normalizeText(question);
+        normalizeText(
+            question
+        );
 
     const questionWords =
         tokenize(question);
@@ -419,79 +565,127 @@ function scoreDocument(
 
 
     // ========================================================
-    // 1. Exact question match
+    // 1. EXACT QUESTION MATCH
     // ========================================================
 
     if (
         questionText.length > 5 &&
         text.includes(questionText)
     ) {
+
         score += 30;
+
     }
 
 
     // ========================================================
-    // 2. Individual word matching
+    // 2. WORD MATCHING
     // ========================================================
 
-    for (const word of questionWords) {
+    for (
+        const word
+        of questionWords
+    ) {
 
-        if (word.length < 2) {
+        if (
+            word.length < 2
+        ) {
+
             continue;
+
         }
 
-        if (text.includes(word)) {
+
+        if (
+            text.includes(word)
+        ) {
+
             score += 1;
+
         }
 
-        if (source.includes(word)) {
+
+        if (
+            source.includes(word)
+        ) {
+
             score += 2;
+
         }
+
     }
 
 
     // ========================================================
-    // 3. Course matching
+    // 3. COURSE MATCHING
     // ========================================================
 
-    for (const course of courseNames) {
+    for (
+        const course
+        of courseNames
+    ) {
 
-        if (text.includes(course)) {
+        if (
+            text.includes(course)
+        ) {
 
             score += 15;
 
         }
 
-        if (source.includes(
-            course.replace(/\s+/g, "-")
-        )) {
+
+        const courseSource =
+            course.replace(
+                /\s+/g,
+                "-"
+            );
+
+
+        if (
+            source.includes(
+                courseSource
+            )
+        ) {
 
             score += 20;
 
         }
+
     }
 
 
     // ========================================================
-    // 4. Fee intent
+    // 4. FEE INTENT
     // ========================================================
 
-    if (intents.fee) {
+    if (
+        intents.fee
+    ) {
 
-        for (const term of IMPORTANT_TERMS.fee) {
+        for (
+            const term
+            of IMPORTANT_TERMS.fee
+        ) {
 
-            if (text.includes(term)) {
+            if (
+                text.includes(term)
+            ) {
+
                 score += 4;
+
             }
 
-            if (source.includes(term)) {
+
+            if (
+                source.includes(term)
+            ) {
+
                 score += 2;
+
             }
+
         }
 
-
-        // Strong bonus if document contains
-        // Pakistani currency / numeric fee
 
         if (
             /rs\.?\s*[\d,]+/.test(text) ||
@@ -500,13 +694,16 @@ function scoreDocument(
                 document.text || ""
             )
         ) {
+
             score += 15;
+
         }
+
     }
 
 
     // ========================================================
-    // 5. Application / admission intent
+    // 5. APPLICATION / ADMISSION
     // ========================================================
 
     if (
@@ -519,13 +716,23 @@ function scoreDocument(
             of IMPORTANT_TERMS.application
         ) {
 
-            if (text.includes(term)) {
+            if (
+                text.includes(term)
+            ) {
+
                 score += 5;
+
             }
 
-            if (source.includes(term)) {
+
+            if (
+                source.includes(term)
+            ) {
+
                 score += 2;
+
             }
+
         }
 
 
@@ -534,151 +741,279 @@ function scoreDocument(
             text.includes("register") ||
             text.includes("enroll")
         ) {
+
             score += 15;
+
         }
+
     }
 
 
     // ========================================================
-    // 6. Schedule intent
+    // 6. SCHEDULE
     // ========================================================
 
-    if (intents.schedule) {
+    if (
+        intents.schedule
+    ) {
 
         for (
             const term
             of IMPORTANT_TERMS.schedule
         ) {
 
-            if (text.includes(term)) {
+            if (
+                text.includes(term)
+            ) {
+
                 score += 4;
+
             }
 
-            if (source.includes(term)) {
+
+            if (
+                source.includes(term)
+            ) {
+
                 score += 2;
+
             }
+
         }
+
     }
 
 
     // ========================================================
-    // 7. Contact intent
+    // 7. CONTACT
     // ========================================================
 
-    if (intents.contact) {
+    if (
+        intents.contact
+    ) {
 
         for (
             const term
             of IMPORTANT_TERMS.contact
         ) {
 
-            if (text.includes(term)) {
+            if (
+                text.includes(term)
+            ) {
+
                 score += 4;
+
             }
 
-            if (source.includes(term)) {
+
+            if (
+                source.includes(term)
+            ) {
+
                 score += 2;
+
             }
+
         }
 
 
         if (
-            /\b0\d{2,3}[-\s]?\d{6,8}\b/.test(text)
+            /\b0\d{2,3}[-\s]?\d{6,8}\b/.test(
+                text
+            )
         ) {
+
             score += 10;
+
         }
+
     }
 
 
     // ========================================================
-    // 8. Campus intent
+    // 8. CAMPUS
     // ========================================================
 
-    if (intents.campus) {
+    if (
+        intents.campus
+    ) {
 
         for (
             const term
             of IMPORTANT_TERMS.campus
         ) {
 
-            if (text.includes(term)) {
+            if (
+                text.includes(term)
+            ) {
+
                 score += 4;
+
             }
+
         }
+
     }
 
 
     // ========================================================
-    // 9. Duration intent
+    // 9. DURATION
     // ========================================================
 
-    if (intents.duration) {
+    if (
+        intents.duration
+    ) {
 
         for (
             const term
             of IMPORTANT_TERMS.duration
         ) {
 
-            if (text.includes(term)) {
+            if (
+                text.includes(term)
+            ) {
+
                 score += 4;
+
             }
+
         }
+
     }
 
 
     // ========================================================
-    // 10. Eligibility intent
+    // 10. ELIGIBILITY
     // ========================================================
 
-    if (intents.eligibility) {
+    if (
+        intents.eligibility
+    ) {
 
         for (
             const term
             of IMPORTANT_TERMS.eligibility
         ) {
 
-            if (text.includes(term)) {
+            if (
+                text.includes(term)
+            ) {
+
                 score += 4;
+
             }
+
         }
+
     }
 
 
     // ========================================================
-    // 11. Certificate intent
+    // 11. CERTIFICATE
     // ========================================================
 
-    if (intents.certificate) {
+    if (
+        intents.certificate
+    ) {
 
         for (
             const term
             of IMPORTANT_TERMS.certificate
         ) {
 
-            if (text.includes(term)) {
+            if (
+                text.includes(term)
+            ) {
+
                 score += 4;
+
             }
+
         }
+
     }
 
 
     // ========================================================
-    // 12. Online intent
+    // 12. ONLINE
     // ========================================================
 
-    if (intents.online) {
+    if (
+        intents.online
+    ) {
 
         if (
             text.includes("online") ||
             text.includes("on campus") ||
             text.includes("virtual")
         ) {
+
             score += 6;
+
         }
+
+    }
+
+
+    // ========================================================
+    // 13. WEBSITE
+    // ========================================================
+
+    if (
+        intents.website
+    ) {
+
+        for (
+            const term
+            of IMPORTANT_TERMS.website
+        ) {
+
+            if (
+                text.includes(term)
+            ) {
+
+                score += 10;
+
+            }
+
+
+            if (
+                source.includes(term)
+            ) {
+
+                score += 5;
+
+            }
+
+        }
+
+
+        if (
+            text.includes(
+                "corvit.com.pk"
+            )
+        ) {
+
+            score += 30;
+
+        }
+
+
+        if (
+            source.includes(
+                "corvit"
+            )
+        ) {
+
+            score += 10;
+
+        }
+
     }
 
 
     return score;
+
 }
 
 
@@ -688,7 +1023,7 @@ function scoreDocument(
 
 function retrieveDocuments(
     question,
-    numberOfResults = 12
+    numberOfResults = 6
 ) {
 
     if (
@@ -701,14 +1036,20 @@ function retrieveDocuments(
         );
 
         return [];
+
     }
 
 
     const intents =
-        detectIntents(question);
+        detectIntents(
+            question
+        );
+
 
     const courseNames =
-        extractCourseNames(question);
+        extractCourseNames(
+            question
+        );
 
 
     console.log(
@@ -716,19 +1057,19 @@ function retrieveDocuments(
         intents
     );
 
+
     console.log(
         "Detected courses:",
         courseNames
     );
 
 
-    // --------------------------------------------------------
-    // Score every document
-    // --------------------------------------------------------
-
     const scoredDocuments =
         knowledgeBase.map(
-            (document, index) => {
+            (
+                document,
+                index
+            ) => {
 
                 const score =
                     scoreDocument(
@@ -738,83 +1079,121 @@ function retrieveDocuments(
                         courseNames
                     );
 
+
                 return {
                     document,
                     score,
                     index
                 };
+
             }
         );
 
 
-    // --------------------------------------------------------
-    // Sort highest score first
-    // --------------------------------------------------------
+    // ========================================================
+    // SORT
+    // ========================================================
 
     scoredDocuments.sort(
         (a, b) => {
 
-            if (b.score !== a.score) {
-                return b.score - a.score;
+            if (
+                b.score !== a.score
+            ) {
+
+                return (
+                    b.score -
+                    a.score
+                );
+
             }
 
-            return a.index - b.index;
+
+            return (
+                a.index -
+                b.index
+            );
+
         }
     );
 
 
-    // --------------------------------------------------------
-    // Remove zero-score documents
-    // --------------------------------------------------------
+    // ========================================================
+    // REMOVE ZERO SCORE DOCUMENTS
+    // ========================================================
 
     let results =
         scoredDocuments.filter(
-            item => item.score > 0
+            item =>
+                item.score > 0
         );
 
 
-    // --------------------------------------------------------
-    // If course is mentioned, strongly prioritize
-    // documents containing that course
-    // --------------------------------------------------------
+    // ========================================================
+    // PRIORITIZE COURSE DOCUMENTS
+    // ========================================================
 
-    if (courseNames.length > 0) {
+    if (
+        courseNames.length > 0
+    ) {
 
         const courseDocuments =
-            results.filter(item => {
+            results.filter(
+                item => {
 
-                const text =
-                    normalizeText(
-                        item.document.text || ""
+                    const text =
+                        normalizeText(
+                            item.document.text || ""
+                        );
+
+
+                    return courseNames.some(
+                        course =>
+                            text.includes(
+                                course
+                            )
                     );
 
-                return courseNames.some(
-                    course =>
-                        text.includes(course)
-                );
-            });
+                }
+            );
 
 
-        if (courseDocuments.length > 0) {
+        if (
+            courseDocuments.length > 0
+        ) {
 
             results = [
+
                 ...courseDocuments,
+
                 ...results.filter(
                     item =>
-                        !courseDocuments.includes(item)
+                        !courseDocuments.includes(
+                            item
+                        )
                 )
+
             ];
+
         }
+
     }
 
 
-    // --------------------------------------------------------
-    // Return top results
-    // --------------------------------------------------------
+    // ========================================================
+    // RETURN TOP RESULTS
+    // ========================================================
 
     return results
-        .slice(0, numberOfResults)
-        .map(item => item.document);
+        .slice(
+            0,
+            numberOfResults
+        )
+        .map(
+            item =>
+                item.document
+        );
+
 }
 
 
@@ -830,13 +1209,18 @@ function buildContext(
         !documents ||
         documents.length === 0
     ) {
+
         return "";
+
     }
 
 
     return documents
         .map(
-            (document, index) => {
+            (
+                document,
+                index
+            ) => {
 
                 return `
 DOCUMENT ${index + 1}
@@ -847,11 +1231,13 @@ ${document.source || "Unknown"}
 CONTENT:
 ${document.text || ""}
 `;
+
             }
         )
         .join(
             "\n\n==============================\n\n"
         );
+
 }
 
 
@@ -860,17 +1246,15 @@ ${document.text || ""}
 // ============================================================
 
 const MODELS = [
-
-    "openai/gpt-oss-120b",
-
-    "llama-3.1-8b-instant"
-
+    "openai/gpt-oss-120b"
 ];
 
 
 async function askGroq(
     question,
-    context
+    context,
+    conversationHistory = [],
+    isDetailed = false
 ) {
 
     const apiKey =
@@ -882,109 +1266,168 @@ async function askGroq(
         throw new Error(
             "GROQ_API_KEY is not configured."
         );
+
     }
 
 
+    // ========================================================
+    // SYSTEM INSTRUCTIONS
+    // ========================================================
+
+    const systemMessage = `
+You are the official Corvit Systems website AI assistant.
+
+Your job is to answer questions about Corvit Systems.
+
+Use ONLY the information provided in the Corvit context.
+
+NEVER invent facts.
+
+NEVER guess fees, dates, locations, course details,
+eligibility, schedules, or contact information.
+
+Be concise, clear, professional, and helpful.
+
+RESPONSE STYLE:
+
+Answer naturally according to the question.
+
+Do NOT automatically use bullet points.
+
+Use normal paragraphs for:
+- definitions
+- explanations
+- "what is" questions
+- general information
+- detailed explanations
+
+Use bullet points only when they genuinely improve readability,
+such as:
+- lists of courses
+- multiple fees
+- application steps
+- contact details
+- comparisons
+- multiple options
+
+Keep normal answers concise and natural.
+
+Do not force every answer into a list.
+Do not use headings unless they are useful.
+Do not use unnecessary formatting.
+
+DETAILED ANSWERS:
+
+If the user asks for a detailed answer, explain the topic
+in natural paragraphs with enough useful detail.
+
+Use paragraphs by default.
+
+Use bullet points only when listing several distinct items
+makes the answer clearer.
+
+Do not dump every piece of information from the context.
+Include only information relevant to the topic.
+
+FEES:
+- If the user asks for a fee, give the relevant course
+  and its fee.
+- Do not list unrelated fees.
+
+COURSES:
+- If the user asks for courses, give a concise list.
+- If the user asks about one course, focus only on that course.
+
+BEGINNER QUESTIONS:
+- Recommend only the most relevant beginner-friendly
+  options supported by the context.
+
+APPLICATION:
+- Give concise application/registration steps when asked.
+
+CONTACT:
+- Give only the relevant contact details when asked.
+
+WEBSITE:
+- If asked for the website, provide only:
+  https://corvit.com.pk/
+
+FOLLOW-UP QUESTIONS:
+- Treat phrases such as "tell me more", "explain more",
+  "give me detailed answer", "more details", and
+  "explain in detail" as follow-up requests.
+- Use the previous conversation to determine the topic.
+
+If the information is not available in the provided
+context, say:
+
+"I couldn't find that information in the Corvit knowledge base."
+
+Do not mention:
+- RAG
+- retrieval
+- embeddings
+- vector database
+- ChromaDB
+- knowledge chunks
+- internal implementation
+
+Do not repeat the user's question.
+
+Do not add unnecessary "Additional Information"
+sections.
+
+Do not end every answer with:
+"Let me know if you need more information."
+
+Use simple professional language.
+`;
+
+
+    // ========================================================
+    // CONVERSATION
+    // ========================================================
+
+    const conversationText =
+        conversationHistory
+            .map(
+                message =>
+                    `${message.role}: ${message.content}`
+            )
+            .join("\n");
+
+
+    // ========================================================
+    // USER PROMPT
+    // ========================================================
+
     const prompt = `
-You are Corvit Systems' AI assistant.
-
-Your job is to answer the user's question using
-ONLY the information contained in the provided
-Corvit knowledge base.
-
 ==================================================
-IMPORTANT RULES
-==================================================
-
-1. Carefully read ALL provided documents before
-   answering.
-
-2. NEVER invent information.
-
-3. NEVER use your general knowledge when the
-   answer is not present in the context.
-
-4. If the user asks about courses, list the
-   relevant courses found in the context.
-
-5. If the user asks about a course fee, ALWAYS
-   look specifically for the fee of that course.
-
-6. If a fee is present in the context, ALWAYS
-   provide it.
-
-7. NEVER estimate a fee.
-
-8. NEVER replace a fee with another fee.
-
-9. If multiple courses are requested, give the
-   fee for EACH course when available.
-
-10. If the user asks how to apply, enroll, or
-    register, specifically look for application,
-    enrollment, registration, "Apply Now", phone,
-    WhatsApp, email, or contact information.
-
-11. If application information is available,
-    clearly explain the steps the user should
-    follow.
-
-12. If schedule information is available,
-    include relevant starting dates, timings,
-    training mode, and days.
-
-13. If campus information is requested, provide
-    the relevant campus, address, phone number,
-    or other information available in context.
-
-14. If online/on-campus information is available,
-    clearly mention it.
-
-15. If duration information is available,
-    provide it.
-
-16. If eligibility or prerequisites are available,
-    provide them.
-
-17. If certificate information is available,
-    provide it.
-
-18. If the requested information is NOT present
-    in the context, clearly say that you could
-    not find it in the Corvit knowledge base.
-
-19. Do not claim that information is unavailable
-    if it is actually present somewhere in the
-    supplied documents.
-
-20. Do not mention:
-    - RAG
-    - retrieval
-    - embeddings
-    - vector database
-    - ChromaDB
-    - knowledge chunks
-    - internal implementation
-
-21. Use Pakistani currency notation exactly as
-    it appears in the context.
-
-22. Keep answers professional and easy to read.
-
-23. When useful, organize information using
-    bullet points.
-
-==================================================
-CONTEXT
+CORVIT KNOWLEDGE CONTEXT
 ==================================================
 
 ${context}
 
 ==================================================
-USER QUESTION
+PREVIOUS CONVERSATION
+==================================================
+
+${conversationText || "No previous conversation."}
+
+==================================================
+CURRENT USER QUESTION
 ==================================================
 
 ${question}
+
+==================================================
+RESPONSE TYPE
+==================================================
+
+${isDetailed
+    ? "The user wants more detail about the previous topic. Give a useful but focused detailed answer."
+    : "Give a concise answer focused only on the current question."
+}
 
 ==================================================
 ANSWER
@@ -995,9 +1438,9 @@ ANSWER
     let lastError = null;
 
 
-    // --------------------------------------------------------
-    // Try available models
-    // --------------------------------------------------------
+    // ========================================================
+    // TRY GROQ MODEL
+    // ========================================================
 
     for (
         const model
@@ -1015,14 +1458,17 @@ ANSWER
                 await fetch(
                     "https://api.groq.com/openai/v1/chat/completions",
                     {
+
                         method: "POST",
 
                         headers: {
+
                             "Content-Type":
                                 "application/json",
 
                             "Authorization":
                                 `Bearer ${apiKey}`
+
                         },
 
                         body: JSON.stringify({
@@ -1035,9 +1481,8 @@ ANSWER
                                     role: "system",
 
                                     content:
-                                        "You are a helpful Corvit Systems AI assistant. "
-                                        +
-                                        "Use only the information provided in the context."
+                                        systemMessage
+
                                 },
 
                                 {
@@ -1045,20 +1490,30 @@ ANSWER
 
                                     content:
                                         prompt
+
                                 }
 
                             ],
 
                             temperature: 0.1
+
                         })
+
                     }
                 );
 
 
-            if (!response.ok) {
+            // ==================================================
+            // API ERROR
+            // ==================================================
+
+            if (
+                !response.ok
+            ) {
 
                 const errorText =
                     await response.text();
+
 
                 console.error(
                     `Model ${model} failed:`,
@@ -1071,9 +1526,15 @@ ANSWER
                         `Groq API error: ${response.status} ${errorText}`
                     );
 
+
                 continue;
+
             }
 
+
+            // ==================================================
+            // PARSE RESPONSE
+            // ==================================================
 
             const data =
                 await response.json();
@@ -1086,13 +1547,17 @@ ANSWER
                     ?.content;
 
 
-            if (answer) {
+            if (
+                answer
+            ) {
 
                 console.log(
                     `Groq model ${model} succeeded.`
                 );
 
-                return answer;
+
+                return answer.trim();
+
             }
 
 
@@ -1102,6 +1567,7 @@ ANSWER
                 );
 
         }
+
         catch (error) {
 
             console.error(
@@ -1109,8 +1575,12 @@ ANSWER
                 error
             );
 
-            lastError = error;
+
+            lastError =
+                error;
+
         }
+
     }
 
 
@@ -1120,6 +1590,7 @@ ANSWER
             "All Groq models failed."
         )
     );
+
 }
 
 
@@ -1149,10 +1620,14 @@ exports.handler = async function (
             },
 
             body: JSON.stringify({
+
                 error:
                     "Method not allowed"
+
             })
+
         };
+
     }
 
 
@@ -1171,13 +1646,47 @@ exports.handler = async function (
         let question = "";
 
 
-        // ----------------------------------------------------
-        // Format 1
-        //
-        // {
-        //     question: "..."
-        // }
-        // ----------------------------------------------------
+        // ====================================================
+        // CONVERSATION HISTORY
+        // ====================================================
+
+        let conversationHistory = [];
+
+
+        if (
+            Array.isArray(
+                body.messages
+            )
+        ) {
+
+            conversationHistory =
+                body.messages
+                    .filter(
+                        message =>
+                            message &&
+                            (
+                                message.role === "user" ||
+                                message.role === "assistant"
+                            )
+                    )
+                    .map(
+                        message => ({
+                            role:
+                                message.role,
+
+                            content:
+                                String(
+                                    message.content || ""
+                                )
+                        })
+                    );
+
+        }
+
+
+        // ====================================================
+        // FORMAT 1: question
+        // ====================================================
 
         if (
             body.question
@@ -1185,27 +1694,21 @@ exports.handler = async function (
 
             question =
                 body.question;
+
         }
 
 
-        // ----------------------------------------------------
-        // Format 2
-        //
-        // {
-        //     messages: [...]
-        // }
-        // ----------------------------------------------------
+        // ====================================================
+        // FORMAT 2: messages
+        // ====================================================
 
         else if (
-            Array.isArray(
-                body.messages
-            )
+            conversationHistory.length > 0
         ) {
 
             const userMessages =
-                body.messages.filter(
+                conversationHistory.filter(
                     message =>
-                        message &&
                         message.role === "user"
                 );
 
@@ -1214,15 +1717,13 @@ exports.handler = async function (
                 userMessages.length > 0
             ) {
 
-                const lastMessage =
+                question =
                     userMessages[
                         userMessages.length - 1
-                    ];
+                    ].content;
 
-
-                question =
-                    lastMessage.content;
             }
+
         }
 
 
@@ -1233,31 +1734,40 @@ exports.handler = async function (
 
 
         // ====================================================
-        // VALIDATE QUESTION
+        // VALIDATE
         // ====================================================
 
-        if (!question) {
+        if (
+            !question
+        ) {
 
             return {
 
                 statusCode: 400,
 
                 headers: {
+
                     "Content-Type":
                         "application/json"
+
                 },
 
                 body: JSON.stringify({
+
                     error:
                         "Question is required."
+
                 })
+
             };
+
         }
 
 
         console.log(
             "================================"
         );
+
 
         console.log(
             "User question:",
@@ -1266,13 +1776,120 @@ exports.handler = async function (
 
 
         // ====================================================
-        // RETRIEVAL
+        // NORMALIZE
         // ====================================================
+
+        const normalizedQuestion =
+            normalizeText(
+                question
+            );
+
+
+        // ====================================================
+        // WEBSITE DIRECT RESPONSE
+        // ====================================================
+
+        if (
+            /\bwebsite\b|\bweb site\b|\bofficial site\b|\bwebpage\b/.test(
+                normalizedQuestion
+            )
+        ) {
+
+            return {
+
+                statusCode: 200,
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    reply:
+                        "https://corvit.com.pk/"
+
+                })
+
+            };
+
+        }
+
+
+        // ====================================================
+        // CHECK DETAIL FOLLOW-UP
+        // ====================================================
+
+        const isDetailed =
+            isDetailFollowUp(
+                question
+            );
+
+
+        // ====================================================
+        // FIND PREVIOUS USER QUESTION
+        // ========================================================
+
+        let previousUserQuestion = "";
+
+
+        const previousUserMessages =
+            conversationHistory.filter(
+                message =>
+                    message.role === "user"
+            );
+
+
+        if (
+            previousUserMessages.length >= 2
+        ) {
+
+            previousUserQuestion =
+                previousUserMessages[
+                    previousUserMessages.length - 2
+                ].content;
+
+        }
+
+
+        // ====================================================
+        // QUESTION USED FOR RETRIEVAL
+        // ========================================================
+
+        let retrievalQuestion =
+            question;
+
+
+        if (
+            isDetailed &&
+            previousUserQuestion
+        ) {
+
+            retrievalQuestion =
+                previousUserQuestion;
+
+            console.log(
+                "Detail follow-up detected."
+            );
+
+            console.log(
+                "Previous topic:",
+                previousUserQuestion
+            );
+
+        }
+
+
+        // ====================================================
+        // RETRIEVAL
+        // ========================================================
 
         const documents =
             retrieveDocuments(
-                question,
-                12
+                retrievalQuestion,
+                6
             );
 
 
@@ -1282,21 +1899,28 @@ exports.handler = async function (
         );
 
 
-        // Print retrieved sources for debugging
+        // ====================================================
+        // DEBUG SOURCES
+        // ========================================================
+
         documents.forEach(
-            (document, index) => {
+            (
+                document,
+                index
+            ) => {
 
                 console.log(
                     `Document ${index + 1}:`,
                     document.source
                 );
+
             }
         );
 
 
         // ====================================================
         // NO RESULTS
-        // ====================================================
+        // ========================================================
 
         if (
             documents.length === 0
@@ -1307,8 +1931,10 @@ exports.handler = async function (
                 statusCode: 200,
 
                 headers: {
+
                     "Content-Type":
                         "application/json"
+
                 },
 
                 body: JSON.stringify({
@@ -1317,7 +1943,9 @@ exports.handler = async function (
                         "I couldn't find relevant information about that in the Corvit knowledge base."
 
                 })
+
             };
+
         }
 
 
@@ -1338,7 +1966,9 @@ exports.handler = async function (
         const answer =
             await askGroq(
                 question,
-                context
+                context,
+                conversationHistory,
+                isDetailed
             );
 
 
@@ -1356,8 +1986,10 @@ exports.handler = async function (
             statusCode: 200,
 
             headers: {
+
                 "Content-Type":
                     "application/json"
+
             },
 
             body: JSON.stringify({
@@ -1366,6 +1998,7 @@ exports.handler = async function (
                     answer
 
             })
+
         };
 
     }
@@ -1381,10 +2014,12 @@ exports.handler = async function (
             "================================"
         );
 
+
         console.error(
             "Chat function error:",
             error
         );
+
 
         console.error(
             "================================"
@@ -1396,8 +2031,10 @@ exports.handler = async function (
             statusCode: 500,
 
             headers: {
+
                 "Content-Type":
                     "application/json"
+
             },
 
             body: JSON.stringify({
@@ -1407,6 +2044,9 @@ exports.handler = async function (
                     "Sorry, I encountered an error. Please try again."
 
             })
+
         };
+
     }
+
 };

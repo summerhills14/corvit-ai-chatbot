@@ -246,7 +246,7 @@ document.addEventListener(
             document.getElementById("chat-toggle");
 
         const chatbot =
-            document.querySelector(".chatbot-container");
+            document.getElementById("chatbot");
 
         const sendButton =
             document.getElementById("send-button");
@@ -255,7 +255,10 @@ document.addEventListener(
             document.getElementById("user-input");
 
 
-        // Check chatbot elements
+        // ====================================================
+        // CHECK ELEMENTS
+        // ====================================================
+
         if (!chatToggle || !chatbot) {
 
             console.error(
@@ -263,42 +266,104 @@ document.addEventListener(
             );
 
             return;
-
         }
 
 
-        // OPEN / CLOSE CHATBOT
+        // ====================================================
+        // OPEN CHATBOT
+        // ====================================================
+
+        function openChatbot() {
+
+            chatbot.classList.add("open");
+
+            chatToggle.textContent = "✕";
+
+            if (input) {
+                setTimeout(() => {
+                    input.focus();
+                }, 250);
+            }
+        }
+
+
+        // ====================================================
+        // CLOSE CHATBOT
+        // ====================================================
+
+        function closeChatbot() {
+
+            chatbot.classList.remove("open");
+
+            chatToggle.textContent = "🤖";
+        }
+
+
+        // ====================================================
+        // TOGGLE CHATBOT
+        // ====================================================
+
+        function toggleChatbot() {
+
+            if (
+                chatbot.classList.contains("open")
+            ) {
+
+                closeChatbot();
+
+            } else {
+
+                openChatbot();
+            }
+        }
+
+
+        // ====================================================
+        // FLOATING CHAT BUTTON
+        // ====================================================
+
         chatToggle.addEventListener(
             "click",
             function () {
 
-                chatbot.classList.toggle("open");
-
-
-                if (
-                    chatbot.classList.contains("open")
-                ) {
-
-                    chatToggle.textContent = "✕";
-
-
-                    if (input) {
-                        input.focus();
-                    }
-
-                }
-
-                else {
-
-                    chatToggle.textContent = "🤖";
-
-                }
+                toggleChatbot();
 
             }
         );
 
 
+        // ====================================================
+        // ALL LINKS THAT POINT TO #chatbot
+        // ====================================================
+
+        const chatbotLinks =
+            document.querySelectorAll(
+                'a[href="#chatbot"]'
+            );
+
+
+        chatbotLinks.forEach(
+            function (link) {
+
+                link.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.preventDefault();
+
+                        openChatbot();
+
+                    }
+                );
+
+            }
+        );
+
+
+        // ====================================================
         // SEND BUTTON
+        // ====================================================
+
         if (sendButton) {
 
             sendButton.addEventListener(
@@ -309,30 +374,31 @@ document.addEventListener(
 
                 }
             );
-
         }
 
 
+        // ====================================================
         // ENTER KEY
+        // ====================================================
+
         if (input) {
 
             input.addEventListener(
                 "keydown",
                 function (event) {
 
-                    if (event.key === "Enter") {
+                    if (
+                        event.key === "Enter"
+                    ) {
 
                         event.preventDefault();
 
                         sendMessage();
-
                     }
 
                 }
             );
-
         }
 
     }
 );
-
