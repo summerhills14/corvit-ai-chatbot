@@ -1,234 +1,21 @@
-// =====================================================
-// GLOBAL ELEMENTS
-// =====================================================
+const chatBox = document.getElementById("chat-box");
+const userInput = document.getElementById("user-input");
 
-let chatBox;
-let userInput;
 
-
-// =====================================================
-// INITIALIZE
-// =====================================================
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    chatBox = document.getElementById("chat-box");
-    userInput = document.getElementById("user-input");
-
-    const chatToggle =
-        document.getElementById("chat-toggle");
-
-    const chatbot =
-        document.getElementById("chatbot");
-
-    const sendButton =
-        document.getElementById("send-button");
-
-    const mobileMenu =
-        document.getElementById("mobile-menu");
-
-    const navLinks =
-        document.querySelector(".nav-links");
-
-
-    // =================================================
-    // FLOATING CHAT BUTTON
-    // =================================================
-
-    if (chatToggle && chatbot) {
-
-        chatToggle.addEventListener("click", function () {
-
-            chatbot.classList.toggle("open");
-
-            if (chatbot.classList.contains("open")) {
-
-                chatToggle.textContent = "✕";
-
-                if (userInput) {
-                    setTimeout(function () {
-                        userInput.focus();
-                    }, 200);
-                }
-
-            } else {
-
-                chatToggle.textContent = "🤖";
-
-            }
-
-        });
-
-    }
-
-
-    // =================================================
-    // ALL "AI ASSISTANT" BUTTONS
-    // =================================================
-
-    const aiButtons =
-        document.querySelectorAll(
-            'a[href="#chatbot"]'
-        );
-
-    aiButtons.forEach(function (button) {
-
-        button.addEventListener(
-            "click",
-            function (event) {
-
-                event.preventDefault();
-
-                if (!chatbot) {
-                    return;
-                }
-
-                // Open chatbot
-                chatbot.classList.add("open");
-
-                // Change floating button
-                if (chatToggle) {
-                    chatToggle.textContent = "✕";
-                }
-
-                // Focus input
-                if (userInput) {
-
-                    setTimeout(function () {
-
-                        userInput.focus();
-
-                    }, 250);
-
-                }
-
-            }
-        );
-
-    });
-
-
-    // =================================================
-    // SEND BUTTON
-    // =================================================
-
-    if (sendButton) {
-
-        sendButton.addEventListener(
-            "click",
-            function () {
-
-                sendMessage();
-
-            }
-        );
-
-    }
-
-
-    // =================================================
-    // ENTER KEY
-    // =================================================
-
-    if (userInput) {
-
-        userInput.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (event.key === "Enter") {
-
-                    event.preventDefault();
-
-                    sendMessage();
-
-                }
-
-            }
-        );
-
-    }
-
-
-    // =================================================
-    // MOBILE MENU
-    // =================================================
-
-    if (mobileMenu && navLinks) {
-
-        mobileMenu.addEventListener(
-            "click",
-            function () {
-
-                navLinks.classList.toggle("mobile-open");
-
-                if (
-                    navLinks.classList.contains(
-                        "mobile-open"
-                    )
-                ) {
-
-                    mobileMenu.textContent = "✕";
-
-                } else {
-
-                    mobileMenu.textContent = "☰";
-
-                }
-
-            }
-        );
-
-
-        // Close mobile menu after clicking a link
-
-        navLinks
-            .querySelectorAll("a")
-            .forEach(function (link) {
-
-                link.addEventListener(
-                    "click",
-                    function () {
-
-                        navLinks.classList.remove(
-                            "mobile-open"
-                        );
-
-                        mobileMenu.textContent = "☰";
-
-                    }
-                );
-
-            });
-
-    }
-
-});
-
-
-// =====================================================
+// ==========================================
 // SEND MESSAGE
-// =====================================================
+// ==========================================
 
 async function sendMessage() {
 
-    if (!userInput || !chatBox) {
-        return;
-    }
-
-
-    const question =
-        userInput.value.trim();
-
+    const question = userInput.value.trim();
 
     if (!question) {
         return;
     }
 
 
-    // =================================================
-    // REMOVE WELCOME MESSAGE
-    // =================================================
+    // Remove welcome message
 
     const welcome =
         document.querySelector(".welcome");
@@ -238,9 +25,7 @@ async function sendMessage() {
     }
 
 
-    // =================================================
-    // SHOW USER MESSAGE
-    // =================================================
+    // Show user question
 
     addMessage(
         question,
@@ -253,9 +38,7 @@ async function sendMessage() {
     userInput.value = "";
 
 
-    // =================================================
-    // SHOW TYPING
-    // =================================================
+    // Show typing
 
     const typingId =
         showTyping();
@@ -264,14 +47,10 @@ async function sendMessage() {
     try {
 
         console.log(
-            "Sending question:",
+            "Sending:",
             question
         );
 
-
-        // =================================================
-        // SEND TO FASTAPI
-        // =================================================
 
         const response =
             await fetch(
@@ -307,54 +86,6 @@ async function sendMessage() {
         );
 
 
-        // =================================================
-        // REMOVE TYPING
-        // =================================================
-
-        const typing =
-            document.getElementById(
-                typingId
-            );
-
-        if (typing) {
-            typing.remove();
-        }
-
-
-        // =================================================
-        // SERVER ERROR
-        // =================================================
-
-        if (!response.ok) {
-
-            addMessage(
-                "Sorry, the server returned an error.",
-                "bot"
-            );
-
-            return;
-        }
-
-
-        // =================================================
-        // SHOW AI ANSWER
-        // =================================================
-
-        addMessage(
-            data.answer ||
-            "I couldn't generate an answer.",
-            "bot"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "FULL ERROR:",
-            error
-        );
-
-
         // Remove typing
 
         const typing =
@@ -367,10 +98,49 @@ async function sendMessage() {
         }
 
 
-        // Show connection error
+        // Backend error
+
+        if (!response.ok) {
+
+            addMessage(
+                "Sorry, the server returned an error.",
+                "bot"
+            );
+
+            return;
+        }
+
+
+        // AI answer
 
         addMessage(
-            "❌ Could not connect to the AI server. Please make sure FastAPI is running on http://127.0.0.1:8000",
+            data.answer ||
+            "I couldn't generate an answer.",
+            "bot"
+        );
+
+
+    } catch (error) {
+
+
+        console.error(
+            "FULL ERROR:",
+            error
+        );
+
+
+        const typing =
+            document.getElementById(
+                typingId
+            );
+
+        if (typing) {
+            typing.remove();
+        }
+
+
+        addMessage(
+            "❌ Could not connect to the AI server. Please make sure FastAPI is running.",
             "bot"
         );
 
@@ -379,19 +149,14 @@ async function sendMessage() {
 }
 
 
-// =====================================================
+// ==========================================
 // ADD MESSAGE
-// =====================================================
+// ==========================================
 
 function addMessage(
     message,
     sender
 ) {
-
-    if (!chatBox) {
-        return;
-    }
-
 
     const messageDiv =
         document.createElement("div");
@@ -412,9 +177,7 @@ function addMessage(
     );
 
 
-    // =================================================
-    // BOT MESSAGE
-    // =================================================
+    // AI message
 
     if (
         sender === "bot" &&
@@ -426,10 +189,7 @@ function addMessage(
 
     }
 
-
-    // =================================================
-    // USER MESSAGE
-    // =================================================
+    // User message
 
     else {
 
@@ -455,9 +215,9 @@ function addMessage(
 }
 
 
-// =====================================================
+// ==========================================
 // TYPING INDICATOR
-// =====================================================
+// ==========================================
 
 function showTyping() {
 
@@ -470,8 +230,7 @@ function showTyping() {
         document.createElement("div");
 
 
-    typingDiv.id =
-        id;
+    typingDiv.id = id;
 
 
     typingDiv.classList.add(
@@ -503,20 +262,118 @@ function showTyping() {
 
 
     return id;
-
 }
 
 
-// =====================================================
+// ==========================================
 // NEW CHAT
-// =====================================================
+// ==========================================
 
 function newChat() {
-
-    if (!chatBox) {
-        return;
-    }
 
     chatBox.innerHTML = "";
 
 }
+
+// ==========================================
+// CHATBOT OPEN / CLOSE + ENTER KEY
+// ==========================================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const chatToggle =
+        document.getElementById("chat-toggle");
+
+    const chatbot =
+        document.querySelector(".chatbot-container");
+
+    const sendButton =
+        document.getElementById("send-button");
+
+    const input =
+        document.getElementById("user-input");
+
+
+    // Check elements
+
+    if (!chatToggle || !chatbot) {
+
+        console.error(
+            "Chatbot elements not found!"
+        );
+
+        return;
+    }
+
+
+    // ==========================================
+    // OPEN / CLOSE CHATBOT
+    // ==========================================
+
+    chatToggle.addEventListener(
+        "click",
+        function () {
+
+            chatbot.classList.toggle("open");
+
+
+            if (
+                chatbot.classList.contains("open")
+            ) {
+
+                chatToggle.textContent = "✕";
+
+                input.focus();
+
+            } else {
+
+                chatToggle.textContent = "🤖";
+
+            }
+
+        }
+    );
+
+
+    // ==========================================
+    // SEND BUTTON
+    // ==========================================
+
+    if (sendButton) {
+
+        sendButton.addEventListener(
+            "click",
+            function () {
+
+                sendMessage();
+
+            }
+        );
+
+    }
+
+
+    // ==========================================
+    // ENTER KEY
+    // ==========================================
+
+    if (input) {
+
+        input.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+
+                    event.preventDefault();
+
+                    sendMessage();
+
+                }
+
+            }
+        );
+
+    }
+
+});
