@@ -10,99 +10,77 @@ async function sendMessage() {
 
     const question = userInput.value.trim();
 
-    if (!question) {
-        return;
-    }
+    if (!question) return;
 
 
     // Remove welcome message
-
-    const welcome =
-        document.querySelector(".welcome");
+    const welcome = document.querySelector(".welcome");
 
     if (welcome) {
         welcome.remove();
     }
 
 
-    // Show user question
-
-    addMessage(
-        question,
-        "user"
-    );
+    // Show user message
+    addMessage(question, "user");
 
 
     // Clear input
-
     userInput.value = "";
 
 
-    // Show typing
-
-    const typingId =
-        showTyping();
+    // Show typing indicator
+    const typingId = showTyping();
 
 
     try {
 
-        console.log(
-            "Sending:",
-            question
+        console.log("Sending:", question);
+
+
+        const response = await fetch(
+            "/.netlify/functions/chat",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    messages: [
+                        {
+                            role: "user",
+                            content: question
+                        }
+                    ]
+                })
+            }
         );
 
 
-        const response =
-            await fetch(
-                "http://127.0.0.1:8000/chat",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        question: question
-                    })
-                }
-            );
+        console.log("Response status:", response.status);
 
 
-        console.log(
-            "Response status:",
-            response.status
-        );
+        const data = await response.json();
 
 
-        const data =
-            await response.json();
+        console.log("Backend response:", data);
 
 
-        console.log(
-            "Backend response:",
-            data
-        );
-
-
-        // Remove typing
-
-        const typing =
-            document.getElementById(
-                typingId
-            );
+        // Remove typing indicator
+        const typing = document.getElementById(typingId);
 
         if (typing) {
             typing.remove();
         }
 
 
-        // Backend error
-
+        // Handle server errors
         if (!response.ok) {
 
             addMessage(
+                data.error ||
                 "Sorry, the server returned an error.",
                 "bot"
             );
@@ -111,28 +89,22 @@ async function sendMessage() {
         }
 
 
-        // AI answer
-
+        // Show AI response
         addMessage(
-            data.answer ||
+            data.reply ||
             "I couldn't generate an answer.",
             "bot"
         );
 
+    }
 
-    } catch (error) {
+    catch (error) {
 
-
-        console.error(
-            "FULL ERROR:",
-            error
-        );
+        console.error("Chatbot Error:", error);
 
 
-        const typing =
-            document.getElementById(
-                typingId
-            );
+        // Remove typing indicator
+        const typing = document.getElementById(typingId);
 
         if (typing) {
             typing.remove();
@@ -140,7 +112,7 @@ async function sendMessage() {
 
 
         addMessage(
-            "❌ Could not connect to the AI server. Please make sure FastAPI is running.",
+            "❌ Could not connect to the AI server. Please try again.",
             "bot"
         );
 
@@ -153,10 +125,7 @@ async function sendMessage() {
 // ADD MESSAGE
 // ==========================================
 
-function addMessage(
-    message,
-    sender
-) {
+function addMessage(message, sender) {
 
     const messageDiv =
         document.createElement("div");
@@ -177,8 +146,7 @@ function addMessage(
     );
 
 
-    // AI message
-
+    // AI message with Markdown support
     if (
         sender === "bot" &&
         typeof marked !== "undefined"
@@ -189,8 +157,6 @@ function addMessage(
 
     }
 
-    // User message
-
     else {
 
         content.textContent =
@@ -199,14 +165,10 @@ function addMessage(
     }
 
 
-    messageDiv.appendChild(
-        content
-    );
+    messageDiv.appendChild(content);
 
 
-    chatBox.appendChild(
-        messageDiv
-    );
+    chatBox.appendChild(messageDiv);
 
 
     chatBox.scrollTop =
@@ -222,8 +184,7 @@ function addMessage(
 function showTyping() {
 
     const id =
-        "typing-" +
-        Date.now();
+        "typing-" + Date.now();
 
 
     const typingDiv =
@@ -242,19 +203,15 @@ function showTyping() {
     typingDiv.innerHTML = `
 
         <div class="message-content typing">
-
             <span></span>
             <span></span>
             <span></span>
-
         </div>
 
     `;
 
 
-    chatBox.appendChild(
-        typingDiv
-    );
+    chatBox.appendChild(typingDiv);
 
 
     chatBox.scrollTop =
@@ -262,6 +219,7 @@ function showTyping() {
 
 
     return id;
+
 }
 
 
@@ -275,105 +233,106 @@ function newChat() {
 
 }
 
+
 // ==========================================
-// CHATBOT OPEN / CLOSE + ENTER KEY
+// CHATBOT OPEN / CLOSE
 // ==========================================
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    const chatToggle =
-        document.getElementById("chat-toggle");
+        const chatToggle =
+            document.getElementById("chat-toggle");
 
-    const chatbot =
-        document.querySelector(".chatbot-container");
+        const chatbot =
+            document.querySelector(".chatbot-container");
 
-    const sendButton =
-        document.getElementById("send-button");
+        const sendButton =
+            document.getElementById("send-button");
 
-    const input =
-        document.getElementById("user-input");
-
-
-    // Check elements
-
-    if (!chatToggle || !chatbot) {
-
-        console.error(
-            "Chatbot elements not found!"
-        );
-
-        return;
-    }
+        const input =
+            document.getElementById("user-input");
 
 
-    // ==========================================
-    // OPEN / CLOSE CHATBOT
-    // ==========================================
+        // Check chatbot elements
+        if (!chatToggle || !chatbot) {
 
-    chatToggle.addEventListener(
-        "click",
-        function () {
+            console.error(
+                "Chatbot elements not found!"
+            );
 
-            chatbot.classList.toggle("open");
-
-
-            if (
-                chatbot.classList.contains("open")
-            ) {
-
-                chatToggle.textContent = "✕";
-
-                input.focus();
-
-            } else {
-
-                chatToggle.textContent = "🤖";
-
-            }
+            return;
 
         }
-    );
 
 
-    // ==========================================
-    // SEND BUTTON
-    // ==========================================
-
-    if (sendButton) {
-
-        sendButton.addEventListener(
+        // OPEN / CLOSE CHATBOT
+        chatToggle.addEventListener(
             "click",
             function () {
 
-                sendMessage();
-
-            }
-        );
-
-    }
+                chatbot.classList.toggle("open");
 
 
-    // ==========================================
-    // ENTER KEY
-    // ==========================================
+                if (
+                    chatbot.classList.contains("open")
+                ) {
 
-    if (input) {
+                    chatToggle.textContent = "✕";
 
-        input.addEventListener(
-            "keydown",
-            function (event) {
 
-                if (event.key === "Enter") {
+                    if (input) {
+                        input.focus();
+                    }
 
-                    event.preventDefault();
+                }
 
-                    sendMessage();
+                else {
+
+                    chatToggle.textContent = "🤖";
 
                 }
 
             }
         );
 
-    }
 
-});
+        // SEND BUTTON
+        if (sendButton) {
+
+            sendButton.addEventListener(
+                "click",
+                function () {
+
+                    sendMessage();
+
+                }
+            );
+
+        }
+
+
+        // ENTER KEY
+        if (input) {
+
+            input.addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (event.key === "Enter") {
+
+                        event.preventDefault();
+
+                        sendMessage();
+
+                    }
+
+                }
+            );
+
+        }
+
+    }
+);
+
