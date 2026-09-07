@@ -1,0 +1,118 @@
+Cisco Certified Network Associate (CCNA) – Corvit Systems
+Skip to content
+Corvit Systems- Timings 9 Am to 9 Pm
+Home
+Courses
+Web Development
+Artificial Intelligence
+Cloud Computing
+Cyber Security
+Network Administration
+About
+History
+Blog
+Fees Structure
+Peshawar Fees
+Rawalpindi fees
+Islamabad Fees
+Schedules
+Lahore Campus
+Islamabad Campus
+Rawalpindi Campus
+Contact Us
+Corvit Systems- Timings 9 Am to 9 Pm
+Home
+Courses
+Web Development
+Artificial Intelligence
+Cloud Computing
+Cyber Security
+Network Administration
+About
+History
+Blog
+Fees Structure
+Peshawar Fees
+Rawalpindi fees
+Islamabad Fees
+Schedules
+Lahore Campus
+Islamabad Campus
+Rawalpindi Campus
+Contact Us
+Menu
+Beginner
+Network Administration
+Cisco Certified Network Associate (CCNA)
+Curriculum
+2h  Duration
+The
+Cisco Certified Network Associate
+course is a comprehensive training program that provides learners with a solid understanding of networking concepts and hands-on experience in Cisco network solutions. This course covers a broad range of fundamentals, including network components, network topology architectures, IP connectivity, and network services. By diving into Module 1: Network Fundamentals, students will be equipped with the knowledge to explain the role of network components, understand various topologies, differentiate between TCP/UDP, and configure IP addressing and subnetting. It also introduces them to wireless principles, virtualization, and essential switching concepts. Module 2: Network Access and subsequent modules deepen the understanding of network layer functions, including VLANs, interswitch connectivity, and WLAN configuration. The IP Services module covers NAT, DHCP, DNS, SNMP, and remote network device access, while the Security Fundamentals module teaches about key security concepts, access control, and VPNs. Finally, the Automation and Programmability module introduces the impact of automation on network management, the use of APIs, and configuration management tools like Puppet, Chef, and Ansible.Overall, the 200-301 CCNA course prepares learners for today's associate-level job roles in IT technologies, ensuring they have the latest skills in networking, security, and automation to manage modern network environments effectively.
+Want to submit a review?
+Login
+₨
+25,000.00
+Buy Now
+This course includes
+Basic computer literacy and familiarity with operating a personal computer.
+Basic Internet usage skills, such as web browsing and searching for information online.
+Fundamental understanding of IP addressing, including the differences between IPv4 and IPv6.
+Basic knowledge of network fundamentals, including an understanding of the OSI and TCP/IP models, as well as common networking devices such as routers and switches.
+An awareness of the basic concepts of network security, such as firewalls and access control.
+Some hands-on experience with operating systems (Windows, Mac OS, or Linux) to follow IP parameter verification and other OS-related networking tasks in the curriculum.
+Deleting Course Review
+Are you sure? You can't restore this back
+Cancel
+Delete
+Course Access
+This course is password protected. To access it please enter your password below:
+Password
+Cancel
+Verify
+Related Courses
+Expert
+Network Administration
+Cisco Certified Internetwork Expert (CCIE)
+Master advanced routing and switching concepts and techniques.
+Be capable of designing and implementing complex network architectures.
+Gain expertise in advanced network security measures and troubleshooting methods.
+Buy Now
+Intermediate
+Network Administration
+Cisco Certified Network Professional (CCNP)
+Have a thorough understanding of advanced routing and switching concepts.
+Be able to design and implement secure and scalable network solutions.
+Gain skills in troubleshooting complex network issues.
+Buy Now
+We focus on technologies like Routing & Switching, Cyber Security, Cloud Computing, DevOps, Ethical Hacking, Web Development, Graphic Designing, SEO, Digital Marketing, Operating Systems, etc..
+Find Us:
+embedgooglemap.net
+Contact Us
+Lahore Campus:
+Phone:
+042-35762401
+-2
+Address:
+11A, D1, Ghalib Road Gulberg III Lahore
+Islamabad Campus:
+Phone:
+051 2348287
+Address:
+First Floor Eastern side, Al Malik Center, 70 West, Blue Area Islamabad
+Peshawar Campus:
+Phone:
+091 5701670
+Address:
+1st Floor Ali Tower, Opp Day to Day Store, University Road, Peshawar
+Rawalpindi Campus:
+Phone:
+051 4928004
+Address:
+2nd Floor Zarwar Center, Opp Rabi Center, Muree Road, Rawalpindi
+Muzaffarabad Campus:
+Phone:
+03169994589
+Address:
+Tech Era College Bank Road, Muzaffarabad
+All rights Reserved ® By Corvit Systems-2026

@@ -1,0 +1,7 @@
+[build]
+  publish = "frontend"
+
+[dev]
+  framework = "#static"
+  publish = "frontend"
+  port = 8888
